@@ -1,7 +1,8 @@
 using System;
-namespace ReflectionDemo.Models
+
+namespace Model
 {
-    public class User:BaseModel
+    public class User : BaseModel
     {
         public string Name{get;set;}
         public string Account{get;set;}
@@ -14,11 +15,15 @@ namespace ReflectionDemo.Models
         // 1 : suspend
         // 2 : deleted
         public int Status{get;set;}
+        // 1 : normal user
+        // 2 : administrator
+        // 3 : system administrator
         public int UserType{get;set;}
         public DateTime? LastLoginTime{get;set;}
         public DateTime? CreateTime{get;set;}
         public int CreatorId{get;set;}
         public int? LastUpdatedById{get;set;}
         public DateTime? LastUpdatedTime{get;set;}
+        
     }
 }

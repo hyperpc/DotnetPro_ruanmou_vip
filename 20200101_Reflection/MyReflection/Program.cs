@@ -13,15 +13,34 @@ using ReflectionDemo.Models;
 namespace ReflectionDemo.MyReflection
 {
     /// <summary>
-    /// 1 dll-IL-netadata-reflection
+    /// 1 dll-IL-metadata-reflection
     /// 2 load dll, read module, class, method, and attribute
     /// 3 create object, reflection+simple factory+config,  (destory Singleton, create Generic type)
     /// 4 call instance method, static method, override method, (call private method, generic method)
     /// 5 field and property, get and set value
-    /// 6 bebefit and limit
+    /// 6 benefit and limit
     /// 
     /// MVC ASP.NET ORM IOC AOP
     /// almost all framework using reflection
+    /// 
+    /// benefit: dynamic
+    /// weakness: 
+    /// 1. difficult to use;
+    /// 2. not compiled via compiler, cannot generate error if dll is wrong
+    /// 3. performance low!!!
+    ///     100w times loop, --160times
+    ///                         --common function: 41ms
+    ///                         --reflection function: 6512ms
+    ///                      --but in 100 times loop, reflection take 0.65ms
+    ///                         generally speaking, reflection won't effect performance
+    ///                         unless your reflection take too many loop
+    ///   cache optimize--load dll and get type, only execute once
+    ///      100w times loop, --less 3 times
+    ///                         --common function: 11ms
+    ///                         --reflection function: 62ms
+    /// MVC, ASP.NET, ORM, IOC, AOP all using reflection, and almost all have cache
+    /// MVC, AOP start slow, because they have many initial function (reflection)
+    /// -- this is how using reflection correctly.
     /// </summary>
     class Program
     {
@@ -234,6 +253,7 @@ namespace ReflectionDemo.MyReflection
                 }
                 {                    
                     System.Console.WriteLine("********************Common + Reflection*******************");
+                    /*
                     //common
                     People people = new People();
                     people.Id=123;
@@ -242,7 +262,49 @@ namespace ReflectionDemo.MyReflection
                     System.Console.WriteLine($"people.Id={people.Id}");
                     System.Console.WriteLine($"people.Name={people.Name}");
                     System.Console.WriteLine($"people.Description={people.Description}");
-                    //reflection
+
+                    /// <summary>
+                    /// reflection
+                    /// 1 get: reflection is useful, foreach properties or fields, 
+                    /// no need to write code for new properties or fields
+                    /// 
+                    /// 2 set: seems not so useful
+                    /// </summary>
+                    /// <returns></returns>
+                    Type type = typeof(People);
+                    object opeople = Activator.CreateInstance(type);
+                    foreach(var prop in type.GetProperties())
+                    {
+                        System.Console.WriteLine($"{type.Name}.{prop.Name}={prop.GetValue(opeople)}");
+                        if(prop.Name.Equals("Id")){
+                            prop.SetValue(opeople, 234);
+                        }else if(prop.Name.Equals("Name")){
+                            prop.SetValue(opeople, "八戒，你又瘦了");
+                        }
+                        System.Console.WriteLine($"{type.Name}.{prop.Name}={prop.GetValue(opeople)}");
+                    }
+                    foreach(var field in type.GetFields())
+                    {
+                        System.Console.WriteLine($"{type.Name}.{field.Name}={field.GetValue(opeople)}");
+                        if(field.Name.Equals("Description")){
+                            field.SetValue(opeople, "我不吃肉肉");
+                        }
+                        System.Console.WriteLine($"{type.Name}.{field.Name}={field.GetValue(opeople)}");
+                    }
+                    */
+                }
+                {
+                    System.Console.WriteLine("********************ado.net*******************");
+                    /*
+                    SqlServerHelper helper = new SqlServerHelper();
+                    Company company = helper.Find<Company>(1);
+                    User user = helper.Find<User>(1);
+                    */
+                }
+                {
+                    System.Console.WriteLine("********************monitor*******************");
+                    //before test, make SqlServerHelper constructor and Query method have no logic
+                    Monitor.Show();
                 }
                 
                 Console.Read();
